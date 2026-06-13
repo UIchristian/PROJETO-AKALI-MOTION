@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { akaliImages } from "@/assets/akali";
 
 const beats = [
   "Once the Fist of Shadow within the Kinkou Order, sworn to balance the realms seen and unseen.",
@@ -26,7 +27,7 @@ export function Lore() {
         });
       });
       gsap.to("[data-lore-bg]", {
-        yPercent: -20,
+        yPercent: -15,
         ease: "none",
         scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom top", scrub: true },
       });
@@ -36,15 +37,24 @@ export function Lore() {
 
   return (
     <section ref={root} id="lore" className="relative grain py-32 md:py-48 overflow-hidden">
-      <div
-        data-lore-bg
-        aria-hidden
-        className="absolute inset-0 -z-0 opacity-30"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 30%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 60%)",
-        }}
-      />
+      <div data-lore-bg aria-hidden className="absolute inset-0 -z-0">
+        <img
+          src={akaliImages.shadow.src}
+          alt=""
+          width={1472}
+          height={2080}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-[120%] w-full object-cover object-center opacity-30"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(70% 60% at 30% 40%, transparent 0%, oklch(0.10 0.012 160 / 85%) 70%), linear-gradient(180deg, oklch(0.10 0.012 160 / 80%), oklch(0.10 0.012 160 / 95%))",
+          }}
+        />
+      </div>
       <div className="relative mx-auto max-w-5xl px-6 md:px-12">
         <div className="mb-16 flex items-baseline gap-6">
           <span className="section-label accent-text">02</span>
