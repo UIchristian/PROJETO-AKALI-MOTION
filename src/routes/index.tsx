@@ -1,29 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SmoothScroll } from "@/components/akali/SmoothScroll";
+import { Hero } from "@/components/akali/Hero";
+import { Lore } from "@/components/akali/Lore";
+import { Abilities } from "@/components/akali/Abilities";
+import { Skins } from "@/components/akali/Skins";
+import { Footer } from "@/components/akali/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Akali — The Rogue Assassin" },
+      {
+        name: "description",
+        content:
+          "A cinematic fan tribute to Akali, the Rogue Assassin of Ionia. Motion study built with React, GSAP, and Lenis.",
+      },
+      { property: "og:title", content: "Akali — The Rogue Assassin" },
+      {
+        property: "og:description",
+        content: "Cinematic fan tribute. Motion-driven landing for the Ionian shadow.",
+      },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="relative">
+      <SmoothScroll />
+      <Hero />
+      <Lore />
+      <Abilities />
+      <Skins />
+      <Footer />
+    </main>
   );
 }
