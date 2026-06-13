@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { akaliImages } from "@/assets/akali";
 
 type Skin = {
   name: string;
@@ -8,6 +9,7 @@ type Skin = {
   accent: string;
   accentGlow: string;
   gradient: string;
+  image?: { src: string; alt: string };
 };
 
 const skins: Skin[] = [
@@ -17,6 +19,7 @@ const skins: Skin[] = [
     accent: "oklch(0.82 0.22 155)",
     accentGlow: "oklch(0.88 0.24 152 / 45%)",
     gradient: "linear-gradient(135deg, oklch(0.18 0.05 165), oklch(0.28 0.18 155))",
+    image: akaliImages.base,
   },
   {
     name: "Blood Moon Akali",
@@ -24,6 +27,7 @@ const skins: Skin[] = [
     accent: "oklch(0.65 0.25 22)",
     accentGlow: "oklch(0.7 0.27 22 / 45%)",
     gradient: "linear-gradient(135deg, oklch(0.15 0.04 25), oklch(0.45 0.22 22))",
+    image: akaliImages.bloodmoon,
   },
   {
     name: "Star Guardian Akali",
@@ -32,6 +36,7 @@ const skins: Skin[] = [
     accentGlow: "oklch(0.88 0.18 320 / 45%)",
     gradient:
       "linear-gradient(135deg, oklch(0.45 0.12 320), oklch(0.75 0.14 230) 50%, oklch(0.85 0.13 350))",
+    image: akaliImages.starguardian,
   },
   {
     name: "K/DA Akali",
@@ -52,7 +57,6 @@ export function Skins() {
     const isMobile = window.innerWidth < 768;
 
     const ctx = gsap.context(() => {
-      // Horizontal scroll on desktop
       if (!reduced && !isMobile) {
         const panels = gsap.utils.toArray<HTMLElement>("[data-skin-panel]");
         const totalX = () => track.current!.scrollWidth - window.innerWidth;
@@ -69,15 +73,11 @@ export function Skins() {
           },
         });
 
-        // Per-panel accent transition
         panels.forEach((panel) => {
           const accent = panel.dataset.accent!;
           const glow = panel.dataset.glow!;
           ScrollTrigger.create({
             trigger: panel,
-            containerAnimation: ScrollTrigger.getAll().find((s) => s.pin === root.current)
-              ? undefined
-              : undefined,
             start: "left center",
             end: "right center",
             horizontal: true,
@@ -94,7 +94,6 @@ export function Skins() {
           });
         });
       } else {
-        // Mobile: stacked, accent on enter
         gsap.utils.toArray<HTMLElement>("[data-skin-panel]").forEach((panel) => {
           ScrollTrigger.create({
             trigger: panel,
@@ -113,7 +112,6 @@ export function Skins() {
         });
       }
 
-      // Reset to default green on leaving section
       ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
@@ -160,13 +158,47 @@ export function Skins() {
           >
             <div
               aria-hidden
-              className="absolute inset-6 md:inset-12 rounded-xl"
+              className="absolute inset-6 md:inset-12 overflow-hidden rounded-xl"
               style={{ background: s.gradient, boxShadow: `0 30px 120px -30px ${s.accentGlow}` }}
-            />
+            >
+              {s.image ? (
+                <>
+                  <img
+                    src={s.image.src}
+                    alt={s.image.alt}
+                    width={1472}
+                    height={2208}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover object-center"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, transparent 30%, oklch(0.08 0.012 160 / 80%) 100%), linear-gradient(90deg, oklch(0.08 0.012 160 / 60%) 0%, transparent 50%)",
+                    }}
+                  />
+                </>
+              ) : (
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{ background: s.gradient }}
+                >
+                  <span
+                    className="display text-[12vw] md:text-[8vw] leading-none text-bone/20 select-none"
+                  >
+                    {s.name.split(" ")[0]}
+                  </span>
+                </div>
+              )}
+            </div>
             <div className="relative z-10 max-w-2xl">
               <span className="section-label opacity-80">0{i + 1} / 0{skins.length}</span>
-              <h3 className="display mt-4 text-5xl md:text-8xl text-bone">{s.name}</h3>
-              <p className="mt-4 text-base md:text-xl text-bone/80 max-w-md">{s.tag}</p>
+              <h3 className="display mt-4 text-5xl md:text-8xl text-bone drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                {s.name}
+              </h3>
+              <p className="mt-4 text-base md:text-xl text-bone/85 max-w-md">{s.tag}</p>
             </div>
           </article>
         ))}

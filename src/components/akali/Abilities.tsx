@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Smoke } from "./Smoke";
+import { fx } from "@/assets/fx";
 
 const abilities = [
   {
@@ -77,9 +78,21 @@ export function Abilities() {
               style={{ boxShadow: "0 0 0 0 transparent" }}
             >
               {a.smoke && (
-                <div className="absolute inset-0 opacity-60 transition-opacity duration-700 group-hover:opacity-100">
-                  <Smoke />
-                </div>
+                <>
+                  <div className="absolute inset-0 opacity-60 transition-opacity duration-700 group-hover:opacity-100">
+                    <Smoke />
+                  </div>
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen transition-opacity duration-700 group-hover:opacity-50"
+                    style={{
+                      backgroundImage: `url(${fx.smoke})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "invert(1)",
+                    }}
+                  />
+                </>
               )}
               <div className="relative flex items-start justify-between mb-8">
                 <div className="flex h-14 w-14 items-center justify-center rounded-md border border-border bg-background text-2xl accent-text transition-colors group-hover:accent-border">

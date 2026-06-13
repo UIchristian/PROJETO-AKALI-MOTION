@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Smoke } from "./Smoke";
+import { akaliImages } from "@/assets/akali";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -19,6 +20,7 @@ export function Hero() {
       gsap.from("[data-hero-tag]", { opacity: 0, y: 24, duration: 1, delay: 0.9, ease: "power2.out" });
       gsap.from("[data-hero-meta]", { opacity: 0, y: 12, duration: 0.8, delay: 1.1, stagger: 0.08 });
       gsap.from("[data-hero-kunai]", { scaleY: 0, transformOrigin: "top center", duration: 1.4, delay: 0.4, ease: "expo.inOut" });
+      gsap.from("[data-hero-img]", { opacity: 0, scale: 1.08, duration: 1.6, ease: "expo.out" });
       gsap.to("[data-hero-cue]", { y: 8, repeat: -1, yoyo: true, duration: 1.4, ease: "sine.inOut" });
     }, root);
     return () => ctx.revert();
@@ -28,13 +30,34 @@ export function Hero() {
 
   return (
     <section ref={root} className="relative grain min-h-[100svh] w-full overflow-hidden">
+      {/* Character splash */}
+      <img
+        data-hero-img
+        src={akaliImages.base.src}
+        alt={akaliImages.base.alt}
+        width={1472}
+        height={2208}
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover object-[60%_center] md:object-[70%_center]"
+      />
+      {/* Cinematic gradient overlay for legibility */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.10 0.012 160 / 70%) 0%, oklch(0.10 0.012 160 / 30%) 40%, oklch(0.08 0.012 160 / 92%) 100%), linear-gradient(90deg, oklch(0.08 0.012 160 / 85%) 0%, transparent 55%)",
+        }}
+      />
       <Smoke />
       {/* Kanji backdrop */}
       <div
         aria-hidden
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
       >
-        <span className="display text-[42vw] leading-none accent-text opacity-[0.06] kanji-glow">
+        <span className="display text-[42vw] leading-none accent-text opacity-[0.07] kanji-glow">
           忍
         </span>
       </div>
@@ -61,7 +84,7 @@ export function Hero() {
               </span>
             ))}
           </h1>
-          <p data-hero-tag className="text-xl md:text-3xl text-foreground/80 max-w-2xl">
+          <p data-hero-tag className="text-xl md:text-3xl text-foreground/85 max-w-2xl">
             The <span className="accent-text">Rogue Assassin</span>. Shadow without an order.
           </p>
         </div>
