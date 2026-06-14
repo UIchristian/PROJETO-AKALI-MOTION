@@ -6,20 +6,6 @@ import { useTranslation } from "@/lib/i18n";
 
 const assetsToPreload = [
   akaliImages.base.src,
-  akaliImages.shadow.src,
-  akaliImages.bloodmoon.src,
-  akaliImages.nurse.src,
-  akaliImages.silverfang.src,
-  akaliImages.infernal.src,
-  akaliImages.kdaallout.src,
-  akaliImages.starguardian.src,
-  akaliImages.drx.src,
-  akaliImages.coven.src,
-  akaliImages.story.src,
-  fx.smoke,
-  fx.ink,
-  fx.glow,
-  fx.grain,
 ];
 
 export function Preloader({ onComplete }: { onComplete: () => void }) {
@@ -38,23 +24,27 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
     let loadedCount = 0;
     const totalAssets = assetsToPreload.length;
+    let completed = false;
 
-    if (totalAssets === 0) {
+    const forceComplete = () => {
+      if (completed) return;
+      completed = true;
       setProgress(100);
       setIsDone(true);
-      onComplete();
-      return;
-    }
+    };
+
+    // Hard timeout cap of 1.2s to prevent preloader blocking
+    const timeoutId = setTimeout(forceComplete, 1200);
 
     const onAssetLoaded = () => {
+      if (completed) return;
       loadedCount++;
       const percent = Math.round((loadedCount / totalAssets) * 100);
       setProgress(percent);
 
       if (loadedCount === totalAssets) {
-        setTimeout(() => {
-          setIsDone(true);
-        }, 300);
+        clearTimeout(timeoutId);
+        setTimeout(forceComplete, 150);
       }
     };
 
@@ -64,6 +54,10 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
       img.onload = onAssetLoaded;
       img.onerror = onAssetLoaded;
     });
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [onComplete]);
 
   useEffect(() => {

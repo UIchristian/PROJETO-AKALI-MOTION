@@ -1,11 +1,7 @@
-import smokeUrl from "./smoke-texture.png";
-import grainUrl from "./grain.jpg";
-import inkUrl from "./ink-stroke.png";
-import glowUrl from "./neon-glow.png";
+import smokeUrl from "./smoke-texture.webp";
+import inkUrl from "./ink-stroke.webp";
 
 export const fx = {
   smoke: smokeUrl,
-  grain: grainUrl,
   ink: inkUrl,
-  glow: glowUrl,
 };

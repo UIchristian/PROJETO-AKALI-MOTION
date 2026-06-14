@@ -32,6 +32,20 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
         { scaleX: 1, duration: 1.0, ease: "power4.inOut", transformOrigin: "left center" }
       );
 
+      // Flash neon glow expansion at slash contact/completion
+      tl.fromTo(
+        lineRef.current,
+        { boxShadow: "0 0 8px var(--accent-glow)" },
+        {
+          boxShadow: "0 0 28px var(--accent-glow), 0 0 45px var(--accent)",
+          duration: 0.15,
+          yoyo: true,
+          repeat: 1,
+          ease: "power2.inOut",
+        },
+        "-=0.15"
+      );
+
       // Title characters mask slide-up
       tl.fromTo(
         "[data-hero-word] span span",
@@ -65,6 +79,8 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
         ease: "sine.inOut",
       });
 
+
+
       // Background Parallax
       gsap.fromTo(
         bgRef.current,
@@ -91,7 +107,7 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
     <section
       ref={root}
       id="hero"
-      className="relative grain min-h-[100svh] w-full overflow-hidden flex flex-col justify-between z-0"
+      className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-between z-0"
     >
       {/* Background Image with Parallax & Scrim (split desktop layout to prevent portrait image stretching) */}
       <div className="absolute inset-0 z-0 overflow-hidden">

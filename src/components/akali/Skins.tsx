@@ -9,6 +9,7 @@ type SkinConfig = {
   accentGlow: string;
   gradient: string;
   image?: { src: string; alt: string };
+  objectPosition?: string;
 };
 
 const skinsConfig: SkinConfig[] = [
@@ -23,6 +24,7 @@ const skinsConfig: SkinConfig[] = [
     accentGlow: "oklch(0.72 0.18 200 / 45%)",
     gradient: "linear-gradient(135deg, oklch(0.12 0.03 200), oklch(0.38 0.12 200))",
     image: akaliImages.nurse,
+    objectPosition: "center 4%",
   },
   {
     accent: "oklch(0.78 0.06 250)",
@@ -59,6 +61,7 @@ const skinsConfig: SkinConfig[] = [
     accentGlow: "oklch(0.80 0.12 75 / 45%)",
     gradient: "linear-gradient(135deg, oklch(0.15 0.03 40), oklch(0.45 0.10 75))",
     image: akaliImages.coven,
+    objectPosition: "center 5%",
   },
 ];
 
@@ -79,6 +82,10 @@ export function Skins() {
 
     const ctx = gsap.context(() => {
       if (reduced) {
+        const progressContainer = root.current?.querySelector("[data-skins-progress-container]") as HTMLElement;
+        if (progressContainer) {
+          progressContainer.style.display = "none";
+        }
         return;
       }
 
@@ -97,7 +104,44 @@ export function Skins() {
             start: "top top",
             end: () => "+=" + totalX(),
             invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const progressBar = root.current?.querySelector("[data-skins-progress-bar]");
+              if (progressBar) {
+                gsap.set(progressBar, { scaleX: self.progress });
+              }
+              const progressText = root.current?.querySelector("[data-skins-progress-text]");
+              if (progressText) {
+                const totalSkins = localizedSkins.length;
+                const activeIdx = Math.min(
+                  Math.round(self.progress * (totalSkins - 1)),
+                  totalSkins - 1
+                );
+                progressText.textContent = `0${activeIdx + 1} / 0${totalSkins}`;
+              }
+            },
           },
+        });
+
+        // Horizontal image parallax inside each skin panel's portrait frame
+        panels.forEach((panel) => {
+          const img = panel.querySelector("[data-skin-img]");
+          if (img) {
+            gsap.fromTo(
+              img,
+              { x: -30 },
+              {
+                x: 30,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: panel,
+                  containerAnimation: scrollTween,
+                  start: "left right",
+                  end: "right left",
+                  scrub: true,
+                },
+              }
+            );
+          }
         });
 
         // Trigger color shifts as each panel enters horizontal focus
@@ -112,12 +156,8 @@ export function Skins() {
             end: "right center",
             onToggle: (self) => {
               if (self.isActive) {
-                gsap.to(document.documentElement, {
-                  duration: 0.8,
-                  ease: "power2.out",
-                  "--accent": accent,
-                  "--accent-glow": glow,
-                } as gsap.TweenVars);
+                document.documentElement.style.setProperty("--accent", accent);
+                document.documentElement.style.setProperty("--accent-glow", glow);
               }
             },
           });
@@ -131,12 +171,8 @@ export function Skins() {
             end: "bottom 40%",
             onToggle: (self) => {
               if (self.isActive) {
-                gsap.to(document.documentElement, {
-                  duration: 0.6,
-                  ease: "power2.out",
-                  "--accent": panel.dataset.accent!,
-                  "--accent-glow": panel.dataset.glow!,
-                } as gsap.TweenVars);
+                document.documentElement.style.setProperty("--accent", panel.dataset.accent!);
+                document.documentElement.style.setProperty("--accent-glow", panel.dataset.glow!);
               }
             },
           });
@@ -149,18 +185,12 @@ export function Skins() {
         start: "top bottom",
         end: "bottom top",
         onLeave: () => {
-          gsap.to(document.documentElement, {
-            duration: 0.8,
-            "--accent": "oklch(0.82 0.22 155)",
-            "--accent-glow": "oklch(0.88 0.24 152 / 45%)",
-          } as gsap.TweenVars);
+          document.documentElement.style.setProperty("--accent", "oklch(0.82 0.22 155)");
+          document.documentElement.style.setProperty("--accent-glow", "oklch(0.88 0.24 152 / 45%)");
         },
         onLeaveBack: () => {
-          gsap.to(document.documentElement, {
-            duration: 0.8,
-            "--accent": "oklch(0.82 0.22 155)",
-            "--accent-glow": "oklch(0.88 0.24 152 / 45%)",
-          } as gsap.TweenVars);
+          document.documentElement.style.setProperty("--accent", "oklch(0.82 0.22 155)");
+          document.documentElement.style.setProperty("--accent-glow", "oklch(0.88 0.24 152 / 45%)");
         },
       });
     }, root);
@@ -169,11 +199,25 @@ export function Skins() {
   }, [localizedSkins]);
 
   return (
-    <section ref={root} id="skins" className="relative grain overflow-hidden md:h-screen w-full">
+    <section ref={root} id="skins" className="relative overflow-hidden md:h-screen w-full">
       <div className="absolute top-0 left-0 right-0 z-20 mx-auto max-w-7xl px-6 md:px-12 pt-16 pointer-events-none">
-        <div className="flex items-baseline gap-6">
-          <span className="section-label accent-text">04</span>
-          <span className="section-label">{t.skins.label}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-6">
+            <span className="section-label accent-text">04</span>
+            <span className="section-label">{t.skins.label}</span>
+          </div>
+          {/* Progress Indicator */}
+          <div className="hidden md:flex flex-col items-end gap-2 font-mono" data-skins-progress-container>
+            <span className="text-xs tracking-widest text-bone/60" data-skins-progress-text>
+              01 / 0{localizedSkins.length}
+            </span>
+            <div className="h-[2px] w-32 bg-white/10 overflow-hidden relative">
+              <div 
+                className="absolute inset-0 bg-[color:var(--accent)] origin-left scale-x-0 transition-colors duration-500" 
+                data-skins-progress-bar
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -219,13 +263,15 @@ export function Skins() {
                   {s.image ? (
                     <>
                       <img
+                        data-skin-img
                         src={s.image.src}
                         alt={s.image.alt}
                         width={1472}
                         height={2208}
                         loading="lazy"
                         decoding="async"
-                        className="absolute inset-0 h-full w-full object-cover object-center select-none pointer-events-none transition-transform duration-700 hover:scale-105"
+                        className="absolute inset-y-0 h-full w-[118%] -left-[9%] max-w-none object-cover select-none pointer-events-none transition-transform duration-700 hover:scale-[1.12]"
+                        style={{ objectPosition: s.objectPosition || "center center" }}
                       />
                       {/* Scrim Overlay */}
                       <div

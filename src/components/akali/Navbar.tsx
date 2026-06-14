@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/lib/i18n";
+import { gsap } from "gsap";
 
 export function Navbar() {
   const [activeSection, setActiveSection] = useState("hero");
@@ -49,6 +50,41 @@ export function Navbar() {
     setActiveSection(id);
   };
 
+  const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || window.innerWidth < 768) return;
+
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+
+    const strength = 5;
+    const targetX = (dx / rect.width) * strength;
+    const targetY = (dy / rect.height) * strength;
+
+    gsap.to(el, {
+      x: targetX,
+      y: targetY,
+      duration: 0.3,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+  };
+
+  const handleMagneticLeave = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    gsap.to(e.currentTarget, {
+      x: 0,
+      y: 0,
+      duration: 0.4,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
+  };
+
   const navLinks = [
     { id: "hero", label: t.navbar.overview },
     { id: "lore", label: t.navbar.lore },
@@ -62,7 +98,9 @@ export function Navbar() {
         <a
           href="#hero"
           onClick={(e) => handleNavClick(e, "hero")}
-          className="display text-2xl tracking-wider text-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
+          onMouseMove={handleMagneticMove}
+          onMouseLeave={handleMagneticLeave}
+          className="display inline-block text-2xl tracking-wider text-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
         >
           AKALI <span className="accent-text text-lg">忍</span>
         </a>
@@ -74,7 +112,9 @@ export function Navbar() {
                   <a
                     href={`#${link.id}`}
                     onClick={(e) => handleNavClick(e, link.id)}
-                    className={`relative py-2 text-foreground/70 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded ${
+                    onMouseMove={handleMagneticMove}
+                    onMouseLeave={handleMagneticLeave}
+                    className={`relative inline-block py-2 text-foreground/70 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded ${
                       activeSection === link.id ? "text-foreground" : ""
                     }`}
                   >
@@ -95,7 +135,9 @@ export function Navbar() {
           <div className="flex items-center gap-1 border-l border-border pl-6 h-4" role="group" aria-label="Language Selector">
             <button
               onClick={() => setLanguage("pt")}
-              className={`font-mono text-[10px] tracking-wider hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1 py-0.5 transition-colors ${
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
+              className={`font-mono text-[10px] tracking-wider hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] rounded px-1 py-0.5 transition-colors ${
                 language === "pt" ? "text-foreground font-semibold accent-text" : "text-foreground/40"
               }`}
               aria-label="Alterar idioma para Português"
@@ -105,7 +147,9 @@ export function Navbar() {
             <span className="text-foreground/25 text-[9px] font-mono select-none">/</span>
             <button
               onClick={() => setLanguage("en")}
-              className={`font-mono text-[10px] tracking-wider hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1 py-0.5 transition-colors ${
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
+              className={`font-mono text-[10px] tracking-wider hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] rounded px-1 py-0.5 transition-colors ${
                 language === "en" ? "text-foreground font-semibold accent-text" : "text-foreground/40"
               }`}
               aria-label="Change language to English"

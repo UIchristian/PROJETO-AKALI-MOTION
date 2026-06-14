@@ -53,7 +53,7 @@ export function Abilities() {
     return () => ctx.revert();
   }, []);
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLElement>, key: string) => {
+  const handleMouseEnter = (e: React.SyntheticEvent<HTMLElement>, key: string) => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
@@ -96,7 +96,7 @@ export function Abilities() {
     });
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+  const handleMouseLeave = (e: React.SyntheticEvent<HTMLElement>) => {
     gsap.to(e.currentTarget, {
       y: 0,
       z: 0,
@@ -111,7 +111,7 @@ export function Abilities() {
   };
 
   return (
-    <section ref={root} id="abilities" className="relative grain py-32 md:py-48">
+    <section ref={root} id="abilities" className="relative py-32 md:py-48">
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         <div className="mb-16 flex items-baseline gap-6">
           <span className="section-label accent-text">03</span>
@@ -144,18 +144,24 @@ export function Abilities() {
                   onMouseEnter={(e) => handleMouseEnter(e, a.key)}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
-                  className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 cursor-pointer select-none transition-[border-color,box-shadow] duration-300 hover:border-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  onFocus={(e) => handleMouseEnter(e, a.key)}
+                  onBlur={handleMouseLeave}
+                  className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 cursor-pointer select-none transition-[border-color,box-shadow] duration-300 hover:border-[color:var(--accent)] focus-visible:border-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   tabIndex={0}
                   role="region"
                   aria-label={`Ability ${a.key}: ${a.name}`}
                 >
                   {/* Smoke hover elements on all ability cards */}
-                  <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-85 pointer-events-none">
+                  <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-85 group-focus-within:opacity-85 pointer-events-none">
                     <Smoke />
                   </div>
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 opacity-0 mix-blend-screen transition-opacity duration-500 group-hover:opacity-30"
+                    className={`pointer-events-none absolute inset-0 opacity-0 mix-blend-screen transition-opacity duration-500 ${
+                      a.key === "W"
+                        ? "group-hover:opacity-45 group-focus-within:opacity-45"
+                        : "group-hover:opacity-30 group-focus-within:opacity-30"
+                    }`}
                     style={{
                       backgroundImage: `url(${fx.smoke})`,
                       backgroundSize: "cover",
@@ -165,7 +171,7 @@ export function Abilities() {
                   />
 
                   <div className="relative flex items-start justify-between mb-8 pointer-events-none">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-md border border-border bg-background text-2xl accent-text transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-md border border-border bg-background text-2xl accent-text transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 group-focus-within:scale-110 group-focus-within:rotate-12">
                       {icon}
                     </div>
                     <span className="section-label accent-text">{a.key}</span>
@@ -178,7 +184,7 @@ export function Abilities() {
                   </p>
                   <div
                     aria-hidden
-                    className="absolute bottom-0 left-0 h-px w-0 accent-bg transition-all duration-500 group-hover:w-full"
+                    className="absolute bottom-0 left-0 h-px w-0 accent-bg transition-all duration-500 group-hover:w-full group-focus-within:w-full"
                   />
                 </article>
               </div>

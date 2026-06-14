@@ -1,18 +1,16 @@
-import base from "./akali-base.jpg";
-import shadow from "./akali-shadow.png";
-import bloodmoon from "./akali-bloodmoon.jpg";
-import nurse from "./akali-nurse.png";
-import silverfang from "./akali-silverfang.jpg";
-import infernal from "./akali-infernal.png";
-import kdaallout from "./akali-kdaallout.jpg";
-import starguardian from "./akali-starguardian.jpg";
-import drx from "./akali-drx.jpg";
-import coven from "./akali-coven.png";
-import story from "./akali-story.png";
+import base from "./akali-base.webp";
+import bloodmoon from "./akali-bloodmoon.webp";
+import nurse from "./akali-nurse.webp";
+import silverfang from "./akali-silverfang.webp";
+import infernal from "./akali-infernal.webp";
+import kdaallout from "./akali-kdaallout.webp";
+import starguardian from "./akali-starguardian.webp";
+import drx from "./akali-drx.webp";
+import coven from "./akali-coven.webp";
+import story from "./akali-story.webp";
 
 export const akaliImages = {
   base: { src: base, alt: "Akali, the Rogue Assassin — base splash art" },
-  shadow: { src: shadow, alt: "Akali in shadow — moody portrait with back tattoo" },
   bloodmoon: { src: bloodmoon, alt: "Akali, Blood Moon skin splash art" },
   nurse: { src: nurse, alt: "Nurse Akali skin splash art" },
   silverfang: { src: silverfang, alt: "Silverfang Akali skin splash art" },

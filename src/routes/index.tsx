@@ -25,6 +25,12 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Cinematic fan tribute. Motion-driven landing for the Ionian shadow.",
       },
+      { property: "og:image", content: "/og-image.png" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Akali — The Rogue Assassin" },
+      { name: "twitter:description", content: "Cinematic fan tribute. Motion-driven landing for the Ionian shadow." },
+      { name: "twitter:image", content: "/og-image.png" },
     ],
   }),
   component: Index,
@@ -35,6 +41,7 @@ function Index() {
 
   return (
     <LanguageProvider>
+      <div className="global-grain" aria-hidden="true" />
       <Preloader onComplete={() => setLoaded(true)} />
       <Navbar />
       <main className="relative">

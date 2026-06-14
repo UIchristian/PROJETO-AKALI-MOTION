@@ -93,7 +93,7 @@ export function Lore() {
     <section
       ref={root}
       id="lore"
-      className="relative grain w-full overflow-hidden min-h-screen md:h-[250vh] z-0"
+      className="relative w-full overflow-hidden min-h-screen md:h-[250vh] z-0"
     >
       <div ref={content} className="relative md:h-screen w-full flex items-center z-10">
         {/* Dynamic 3D Motion Particle Field Background */}
