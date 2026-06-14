@@ -124,8 +124,8 @@ const dictionaries: Record<Language, TranslationSchema> = {
       stage: "STAGE",
       list: [
         {
-          name: "Infernal Akali",
-          tag: "Born of fire and cinder. A volcanic fury unleashed upon the mortal realm.",
+          name: "True Damage Akali",
+          tag: "Spitting fire on the mic and striking from the neon shadows. The street-style hip-hop ninja.",
         },
         {
           name: "Nurse Akali",
@@ -234,8 +234,8 @@ const dictionaries: Record<Language, TranslationSchema> = {
       stage: "PALCO",
       list: [
         {
-          name: "Akali Infernal",
-          tag: "Nascida de cinzas e fogo. Uma fúria vulcânica desencadeada no reino mortal.",
+          name: "Akali True Damage",
+          tag: "Cuspindo fogo no microfone e atacando das sombras neon. A ninja do hip-hop com estilo de rua.",
         },
         {
           name: "Akali Enfermeira",

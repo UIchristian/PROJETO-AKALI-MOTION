@@ -2,7 +2,7 @@ import base from "./akali-base.webp";
 import bloodmoon from "./akali-bloodmoon.webp";
 import nurse from "./akali-nurse.webp";
 import silverfang from "./akali-silverfang.webp";
-import infernal from "./akali-infernal.webp";
+import truedamage from "./akali-truedamage.webp";
 import kdaallout from "./akali-kdaallout.webp";
 import starguardian from "./akali-starguardian.webp";
 import drx from "./akali-drx.webp";
@@ -14,7 +14,7 @@ export const akaliImages = {
   bloodmoon: { src: bloodmoon, alt: "Akali, Blood Moon skin splash art" },
   nurse: { src: nurse, alt: "Nurse Akali skin splash art" },
   silverfang: { src: silverfang, alt: "Silverfang Akali skin splash art" },
-  infernal: { src: infernal, alt: "Infernal Akali skin splash art" },
+  truedamage: { src: truedamage, alt: "True Damage Akali skin splash art" },
   kdaallout: { src: kdaallout, alt: "K/DA All Out Akali skin splash art" },
   starguardian: { src: starguardian, alt: "Star Guardian Akali skin splash art" },
   drx: { src: drx, alt: "DRX Akali skin splash art" },

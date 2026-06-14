@@ -14,10 +14,10 @@ type SkinConfig = {
 
 const skinsConfig: SkinConfig[] = [
   {
-    accent: "oklch(0.68 0.24 35)",
-    accentGlow: "oklch(0.68 0.24 35 / 45%)",
-    gradient: "linear-gradient(135deg, oklch(0.12 0.04 20), oklch(0.48 0.22 35))",
-    image: akaliImages.infernal,
+    accent: "oklch(0.88 0.20 95)",
+    accentGlow: "oklch(0.88 0.20 95 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.12 0.04 290), oklch(0.35 0.15 310))",
+    image: akaliImages.truedamage,
   },
   {
     accent: "oklch(0.72 0.18 200)",
