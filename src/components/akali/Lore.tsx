@@ -1,79 +1,165 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ThreeDBackground } from "./ThreeDBackground";
 import { akaliImages } from "@/assets/akali";
-
-const beats = [
-  "Once the Fist of Shadow within the Kinkou Order, sworn to balance the realms seen and unseen.",
-  "She turned away from that doctrine to defend Ionia by her own deadly path — answering threats with steel, not philosophy.",
-  "Twin kama at her hips. A fan of kunai at her back. Energy in place of mana. A storm that arrives before the thunder.",
-];
+import { useTranslation } from "@/lib/i18n";
 
 export function Lore() {
   const root = useRef<HTMLElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
-    if (!root.current) return;
+    if (!root.current || !content.current) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const isMobile = window.innerWidth < 768;
+
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>("[data-lore-beat]").forEach((el) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 60,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 80%", once: true },
+      // Gentle parallax floating effect on the story image frame
+      if (!reduced) {
+        gsap.fromTo(
+          bgRef.current,
+          { y: 30 },
+          {
+            y: -30,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          }
+        );
+      }
+
+      // If mobile or reduced motion, do not pin. Instead, fade elements in normally.
+      if (reduced || isMobile) {
+        gsap.utils.toArray<HTMLElement>("[data-lore-beat]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { opacity: 0.1, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "top 60%",
+                scrub: true,
+              },
+            }
+          );
         });
+        return;
+      }
+
+      // Desktop Pinned Scroll-telling sequence
+      const beatsElements = gsap.utils.toArray<HTMLElement>("[data-lore-beat]");
+      
+      // Set initial styles for absolute overlap animations
+      gsap.set(beatsElements.slice(1), { opacity: 0, y: 30 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root.current,
+          pin: content.current,
+          start: "top top",
+          end: "+=1800",
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+        },
       });
-      gsap.to("[data-lore-bg]", {
-        yPercent: -15,
-        ease: "none",
-        scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom top", scrub: true },
-      });
+
+      // Reveal Sequence:
+      // Beat 0 active -> fades out, slides up. Beat 1 slides up and fades in.
+      tl.to(beatsElements[0], { opacity: 0, y: -30, duration: 1 }, "+=0.3");
+      tl.to(beatsElements[1], { opacity: 1, y: 0, duration: 1 }, "<");
+
+      // Beat 1 active -> fades out, slides up. Beat 2 slides up and fades in.
+      tl.to(beatsElements[1], { opacity: 0, y: -30, duration: 1 }, "+=0.5");
+      tl.to(beatsElements[2], { opacity: 1, y: 0, duration: 1 }, "<");
+
+      // Hold last beat for a small scroll before releasing pin
+      tl.to({}, { duration: 0.4 });
     }, root);
+
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={root} id="lore" className="relative grain py-32 md:py-48 overflow-hidden">
-      <div data-lore-bg aria-hidden className="absolute inset-0 -z-0">
-        <img
-          src={akaliImages.shadow.src}
-          alt=""
-          width={1472}
-          height={2080}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-[120%] w-full object-cover object-center opacity-30"
-        />
+    <section
+      ref={root}
+      id="lore"
+      className="relative grain w-full overflow-hidden min-h-screen md:h-[250vh] z-0"
+    >
+      <div ref={content} className="relative md:h-screen w-full flex items-center z-10">
+        {/* Dynamic 3D Motion Particle Field Background */}
+        <ThreeDBackground />
+        
+        {/* Ambient fade overlays */}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(70% 60% at 30% 40%, transparent 0%, oklch(0.10 0.012 160 / 85%) 70%), linear-gradient(180deg, oklch(0.10 0.012 160 / 80%), oklch(0.10 0.012 160 / 95%))",
-          }}
+          className="absolute inset-0 bg-gradient-to-b from-background/95 via-transparent to-background/95 pointer-events-none z-0"
+          aria-hidden="true"
         />
-      </div>
-      <div className="relative mx-auto max-w-5xl px-6 md:px-12">
-        <div className="mb-16 flex items-baseline gap-6">
-          <span className="section-label accent-text">02</span>
-          <span className="section-label">Lore</span>
-        </div>
-        <h2 className="display text-5xl md:text-7xl mb-20 max-w-3xl">
-          A shadow that <span className="accent-text">refused</span> its order.
-        </h2>
-        <div className="space-y-16 max-w-3xl">
-          {beats.map((t, i) => (
-            <p
-              key={i}
-              data-lore-beat
-              className="text-xl md:text-2xl leading-relaxed text-foreground/85"
+
+        <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 px-6 md:px-12 py-24 md:py-0 z-10">
+          <div className="md:col-span-6 flex flex-col justify-center gap-8">
+            <div>
+              <div className="mb-6 flex items-baseline gap-6">
+                <span className="section-label accent-text">02</span>
+                <span className="section-label">{t.lore.label}</span>
+              </div>
+              <h2 className="display text-5xl md:text-7xl mb-6 leading-[0.9] text-bone select-none">
+                {t.lore.title}<span className="accent-text">{t.lore.titleBold}</span>{t.lore.titleEnd}
+              </h2>
+            </div>
+
+            {/* Complementary Artwork Frame with Scroll Parallax */}
+            <div
+              ref={bgRef}
+              className="relative aspect-[3/4] w-full max-w-[320px] overflow-hidden rounded-xl border border-white/10 shadow-[0_10px_45px_rgba(0,0,0,0.8)] group select-none pointer-events-none hidden md:block"
             >
-              <span className="accent-text mr-3 font-mono text-sm align-middle">0{i + 1}</span>
-              {t}
-            </p>
-          ))}
+              <img
+                src={akaliImages.story.src}
+                alt={akaliImages.story.alt}
+                width={600}
+                height={800}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+            </div>
+          </div>
+
+          <div className="relative md:col-span-6 flex items-center min-h-[350px] md:min-h-[450px]">
+            {/* Story beats container */}
+            <div className="relative w-full md:absolute md:inset-0 md:flex md:flex-col md:justify-center">
+              {t.lore.beats.map((textBeat, i) => (
+                <div
+                  key={i}
+                  data-lore-beat
+                  className="mb-10 md:mb-0 md:absolute md:left-0 md:right-0 text-xl md:text-2xl leading-relaxed text-bone/90"
+                  style={{
+                    // Fallback opacity for server-side rendering or non-JS
+                    opacity: i === 0 ? 1 : 0.2,
+                  }}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className="accent-text font-mono text-sm tracking-wider mt-1 select-none">
+                      0{i + 1}
+                    </span>
+                    <p className="flex-1 drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]">
+                      {textBeat}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

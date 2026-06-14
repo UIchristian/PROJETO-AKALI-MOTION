@@ -35,6 +35,18 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.82 0.22 155);
+}
+
+@property --accent-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.88 0.24 152 / 45%);
+}
+
 :root {
   --radius: 0.5rem;
   /* Cinematic dark theme — Akali default (neon green) */
@@ -65,9 +77,19 @@
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 10%);
   --ring: var(--accent);
+
+  /* Transition the accent variable values dynamically */
+  transition: --accent 0.8s cubic-bezier(0.25, 1, 0.5, 1), --accent-glow 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark { color-scheme: dark; }
+
+/* Custom accessibility focus outlines */
+*:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 16px var(--accent-glow) !important;
+}
 
 @layer base {
   * { border-color: var(--color-border); }

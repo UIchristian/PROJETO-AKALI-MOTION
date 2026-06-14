@@ -17,6 +17,7 @@ export function SmoothScroll() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
+    (window as any).lenis = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
     const raf = (time: number) => {
@@ -28,6 +29,7 @@ export function SmoothScroll() {
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
+      (window as any).lenis = null;
     };
   }, []);
 

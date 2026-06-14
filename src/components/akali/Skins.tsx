@@ -2,54 +2,75 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { akaliImages } from "@/assets/akali";
+import { useTranslation } from "@/lib/i18n";
 
-type Skin = {
-  name: string;
-  tag: string;
+type SkinConfig = {
   accent: string;
   accentGlow: string;
   gradient: string;
   image?: { src: string; alt: string };
 };
 
-const skins: Skin[] = [
+const skinsConfig: SkinConfig[] = [
   {
-    name: "Akali",
-    tag: "The Rogue Assassin. Neon green, neo-Ionian shadow.",
-    accent: "oklch(0.82 0.22 155)",
-    accentGlow: "oklch(0.88 0.24 152 / 45%)",
-    gradient: "linear-gradient(135deg, oklch(0.18 0.05 165), oklch(0.28 0.18 155))",
-    image: akaliImages.base,
+    accent: "oklch(0.68 0.24 35)",
+    accentGlow: "oklch(0.68 0.24 35 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.12 0.04 20), oklch(0.48 0.22 35))",
+    image: akaliImages.infernal,
   },
   {
-    name: "Blood Moon Akali",
-    tag: "Demon mask. Crimson tide. Bone-white grin.",
-    accent: "oklch(0.65 0.25 22)",
-    accentGlow: "oklch(0.7 0.27 22 / 45%)",
-    gradient: "linear-gradient(135deg, oklch(0.15 0.04 25), oklch(0.45 0.22 22))",
+    accent: "oklch(0.72 0.18 200)",
+    accentGlow: "oklch(0.72 0.18 200 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.12 0.03 200), oklch(0.38 0.12 200))",
+    image: akaliImages.nurse,
+  },
+  {
+    accent: "oklch(0.78 0.06 250)",
+    accentGlow: "oklch(0.78 0.06 250 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.12 0.02 250), oklch(0.35 0.05 250))",
+    image: akaliImages.silverfang,
+  },
+  {
+    accent: "oklch(0.55 0.22 25)",
+    accentGlow: "oklch(0.55 0.22 25 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.12 0.03 15), oklch(0.38 0.18 25))",
     image: akaliImages.bloodmoon,
   },
   {
-    name: "Star Guardian Akali",
-    tag: "Pastel constellations. A lonely magical girl.",
-    accent: "oklch(0.82 0.16 340)",
-    accentGlow: "oklch(0.88 0.18 320 / 45%)",
-    gradient:
-      "linear-gradient(135deg, oklch(0.45 0.12 320), oklch(0.75 0.14 230) 50%, oklch(0.85 0.13 350))",
+    accent: "oklch(0.75 0.25 320)",
+    accentGlow: "oklch(0.75 0.25 320 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.15 0.08 300), oklch(0.52 0.24 320))",
+    image: akaliImages.kdaallout,
+  },
+  {
+    accent: "oklch(0.78 0.22 290)",
+    accentGlow: "oklch(0.78 0.22 290 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.14 0.06 280), oklch(0.48 0.18 290))",
     image: akaliImages.starguardian,
   },
   {
-    name: "K/DA Akali",
-    tag: "Stage lights. Hot magenta. Pop the world.",
-    accent: "oklch(0.7 0.28 330)",
-    accentGlow: "oklch(0.75 0.3 320 / 50%)",
-    gradient: "linear-gradient(135deg, oklch(0.25 0.15 300), oklch(0.6 0.28 330))",
+    accent: "oklch(0.82 0.16 220)",
+    accentGlow: "oklch(0.82 0.16 220 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.13 0.04 220), oklch(0.42 0.15 220))",
+    image: akaliImages.drx,
+  },
+  {
+    accent: "oklch(0.80 0.12 75)",
+    accentGlow: "oklch(0.80 0.12 75 / 45%)",
+    gradient: "linear-gradient(135deg, oklch(0.15 0.03 40), oklch(0.45 0.10 75))",
+    image: akaliImages.coven,
   },
 ];
 
 export function Skins() {
   const root = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
+  const localizedSkins = t.skins.list.map((item, idx) => ({
+    ...item,
+    ...skinsConfig[idx],
+  }));
 
   useEffect(() => {
     if (!root.current || !track.current) return;
@@ -57,30 +78,38 @@ export function Skins() {
     const isMobile = window.innerWidth < 768;
 
     const ctx = gsap.context(() => {
-      if (!reduced && !isMobile) {
+      if (reduced) {
+        return;
+      }
+
+      if (!isMobile) {
         const panels = gsap.utils.toArray<HTMLElement>("[data-skin-panel]");
         const totalX = () => track.current!.scrollWidth - window.innerWidth;
-        gsap.to(track.current, {
+
+        // Sync the horizontal translate tween with vertical scroll scrub
+        const scrollTween = gsap.to(track.current, {
           x: () => -totalX(),
           ease: "none",
           scrollTrigger: {
             trigger: root.current,
             pin: true,
-            scrub: 0.8,
+            scrub: 0.5,
             start: "top top",
             end: () => "+=" + totalX(),
             invalidateOnRefresh: true,
           },
         });
 
+        // Trigger color shifts as each panel enters horizontal focus
         panels.forEach((panel) => {
           const accent = panel.dataset.accent!;
           const glow = panel.dataset.glow!;
+
           ScrollTrigger.create({
             trigger: panel,
+            containerAnimation: scrollTween,
             start: "left center",
             end: "right center",
-            horizontal: true,
             onToggle: (self) => {
               if (self.isActive) {
                 gsap.to(document.documentElement, {
@@ -94,6 +123,7 @@ export function Skins() {
           });
         });
       } else {
+        // Mobile layout: vertical cards trigger color shifts when crossing the center
         gsap.utils.toArray<HTMLElement>("[data-skin-panel]").forEach((panel) => {
           ScrollTrigger.create({
             trigger: panel,
@@ -103,6 +133,7 @@ export function Skins() {
               if (self.isActive) {
                 gsap.to(document.documentElement, {
                   duration: 0.6,
+                  ease: "power2.out",
                   "--accent": panel.dataset.accent!,
                   "--accent-glow": panel.dataset.glow!,
                 } as gsap.TweenVars);
@@ -112,35 +143,37 @@ export function Skins() {
         });
       }
 
+      // Restore baseline colors when leaving the section bounds
       ScrollTrigger.create({
         trigger: root.current,
-        start: "top top",
+        start: "top bottom",
         end: "bottom top",
-        onLeaveBack: () => {
-          gsap.to(document.documentElement, {
-            duration: 0.6,
-            "--accent": skins[0].accent,
-            "--accent-glow": skins[0].accentGlow,
-          } as gsap.TweenVars);
-        },
         onLeave: () => {
           gsap.to(document.documentElement, {
-            duration: 0.6,
-            "--accent": skins[0].accent,
-            "--accent-glow": skins[0].accentGlow,
+            duration: 0.8,
+            "--accent": "oklch(0.82 0.22 155)",
+            "--accent-glow": "oklch(0.88 0.24 152 / 45%)",
+          } as gsap.TweenVars);
+        },
+        onLeaveBack: () => {
+          gsap.to(document.documentElement, {
+            duration: 0.8,
+            "--accent": "oklch(0.82 0.22 155)",
+            "--accent-glow": "oklch(0.88 0.24 152 / 45%)",
           } as gsap.TweenVars);
         },
       });
     }, root);
+
     return () => ctx.revert();
-  }, []);
+  }, [localizedSkins]);
 
   return (
-    <section ref={root} id="skins" className="relative grain overflow-hidden md:h-screen">
-      <div className="absolute top-0 left-0 right-0 z-20 mx-auto max-w-7xl px-6 md:px-12 pt-12 pointer-events-none">
+    <section ref={root} id="skins" className="relative grain overflow-hidden md:h-screen w-full">
+      <div className="absolute top-0 left-0 right-0 z-20 mx-auto max-w-7xl px-6 md:px-12 pt-16 pointer-events-none">
         <div className="flex items-baseline gap-6">
           <span className="section-label accent-text">04</span>
-          <span className="section-label">Skins · Identities</span>
+          <span className="section-label">{t.skins.label}</span>
         </div>
       </div>
 
@@ -148,57 +181,88 @@ export function Skins() {
         ref={track}
         className="flex flex-col md:flex-row md:h-screen md:w-max md:flex-nowrap"
       >
-        {skins.map((s, i) => (
+        {localizedSkins.map((s, i) => (
           <article
             key={s.name}
             data-skin-panel
             data-accent={s.accent}
             data-glow={s.accentGlow}
-            className="relative flex min-h-[80vh] w-full shrink-0 flex-col justify-end p-8 md:h-screen md:w-screen md:p-16"
+            className="relative flex min-h-screen w-full shrink-0 flex-col justify-center p-8 md:h-screen md:w-screen md:p-16"
+            role="region"
+            aria-label={`Skin ${i + 1}: ${s.name}`}
           >
-            <div
-              aria-hidden
-              className="absolute inset-6 md:inset-12 overflow-hidden rounded-xl"
-              style={{ background: s.gradient, boxShadow: `0 30px 120px -30px ${s.accentGlow}` }}
-            >
-              {s.image ? (
-                <>
-                  <img
-                    src={s.image.src}
-                    alt={s.image.alt}
-                    width={1472}
-                    height={2208}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover object-center"
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, transparent 30%, oklch(0.08 0.012 160 / 80%) 100%), linear-gradient(90deg, oklch(0.08 0.012 160 / 60%) 0%, transparent 50%)",
-                    }}
-                  />
-                </>
-              ) : (
+            {/* Split Screen layout to prevent character cropping */}
+            <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              
+              {/* Left text column */}
+              <div className="md:col-span-5 flex flex-col justify-center text-left pt-16 md:pt-0">
+                <span className="section-label opacity-90 text-bone drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                  0{i + 1} / 0{localizedSkins.length}
+                </span>
+                <h3 className="display mt-4 text-5xl md:text-7xl lg:text-8xl text-bone drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] select-none">
+                  {s.name}
+                </h3>
+                <p className="mt-4 text-base md:text-lg lg:text-xl text-bone/90 max-w-md drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] select-none">
+                  {s.tag}
+                </p>
+              </div>
+
+              {/* Right framed image column (2:3 aspect ratio) */}
+              <div className="md:col-span-7 flex justify-center items-center w-full">
                 <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  style={{ background: s.gradient }}
+                  className="relative aspect-[2/3] h-[50vh] md:h-[65vh] lg:h-[70vh] max-h-[720px] w-full max-w-[450px] overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.8)]"
+                  style={{
+                    background: s.gradient,
+                    boxShadow: `0 30px 100px -20px ${s.accentGlow}, 0 0 40px -10px ${s.accentGlow}`,
+                  }}
                 >
-                  <span
-                    className="display text-[12vw] md:text-[8vw] leading-none text-bone/20 select-none"
-                  >
-                    {s.name.split(" ")[0]}
-                  </span>
+                  {s.image ? (
+                    <>
+                      <img
+                        src={s.image.src}
+                        alt={s.image.alt}
+                        width={1472}
+                        height={2208}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover object-center select-none pointer-events-none transition-transform duration-700 hover:scale-105"
+                      />
+                      {/* Scrim Overlay */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-t from-background/95 via-transparent to-transparent pointer-events-none"
+                        style={{ mixBlendMode: "multiply" }}
+                      />
+                    </>
+                  ) : (
+                    /* Abstract Neon Grid Stage for K/DA */
+                    <div
+                      className="absolute inset-0 flex flex-col items-center justify-center p-8 overflow-hidden bg-radial-gradient"
+                      style={{
+                        background: "radial-gradient(circle at center, oklch(0.20 0.12 300) 0%, oklch(0.08 0.05 310) 100%)",
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0 opacity-15 pointer-events-none"
+                        style={{
+                          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+                          backgroundSize: "40px 40px",
+                        }}
+                      />
+                      {/* Glowing core representing a spotlight */}
+                      <div
+                        className="absolute h-[60vw] w-[60vw] max-w-[350px] max-h-[350px] rounded-full opacity-40 blur-[80px] transition-colors duration-1000"
+                        style={{ background: "var(--accent)" }}
+                      />
+                      <span
+                        className="display text-6xl md:text-8xl leading-none text-bone/5 select-none tracking-widest uppercase"
+                      >
+                        {t.skins.stage}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="relative z-10 max-w-2xl">
-              <span className="section-label opacity-80">0{i + 1} / 0{skins.length}</span>
-              <h3 className="display mt-4 text-5xl md:text-8xl text-bone drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
-                {s.name}
-              </h3>
-              <p className="mt-4 text-base md:text-xl text-bone/85 max-w-md">{s.tag}</p>
+              </div>
+
             </div>
           </article>
         ))}
