@@ -78,8 +78,8 @@
   --input: oklch(1 0 0 / 10%);
   --ring: var(--accent);
 
-  /* Transition the accent variable values dynamically */
-  transition: --accent 0.8s cubic-bezier(0.25, 1, 0.5, 1), --accent-glow 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  /* Transition the accent variable values dynamically with a spring curve */
+  transition: --accent 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), --accent-glow 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .dark { color-scheme: dark; }

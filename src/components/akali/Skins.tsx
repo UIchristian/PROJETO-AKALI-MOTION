@@ -122,21 +122,39 @@ export function Skins() {
           },
         });
 
-        // Horizontal image parallax inside each skin panel's portrait frame
+        // (Removed inner image horizontal parallax to prevent artificial zoom/cropping)
         panels.forEach((panel) => {
-          const img = panel.querySelector("[data-skin-img]");
-          if (img) {
+          // Cover Flow effect for inner content
+          const inner = panel.querySelector("[data-skin-inner]");
+          if (inner) {
             gsap.fromTo(
-              img,
-              { x: -30 },
+              inner,
+              { scale: 0.85, opacity: 0.3 },
               {
-                x: 30,
+                scale: 1,
+                opacity: 1,
                 ease: "none",
                 scrollTrigger: {
                   trigger: panel,
                   containerAnimation: scrollTween,
-                  start: "left right",
-                  end: "right left",
+                  start: "left right-=20%",
+                  end: "center center",
+                  scrub: true,
+                },
+              }
+            );
+            gsap.fromTo(
+              inner,
+              { scale: 1, opacity: 1 },
+              {
+                scale: 0.85,
+                opacity: 0.3,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: panel,
+                  containerAnimation: scrollTween,
+                  start: "center center",
+                  end: "right left+=20%",
                   scrub: true,
                 },
               }
@@ -236,7 +254,7 @@ export function Skins() {
             aria-label={`Skin ${i + 1}: ${s.name}`}
           >
             {/* Split Screen layout to prevent character cropping */}
-            <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+            <div data-skin-inner className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center origin-center">
               
               {/* Left text column */}
               <div className="md:col-span-5 flex flex-col justify-center text-left pt-16 md:pt-0">
@@ -270,8 +288,8 @@ export function Skins() {
                         height={2208}
                         loading="lazy"
                         decoding="async"
-                        className="absolute inset-y-0 h-full w-[118%] -left-[9%] max-w-none object-cover select-none pointer-events-none transition-transform duration-700 hover:scale-[1.12]"
-                        style={{ objectPosition: s.objectPosition || "center center" }}
+                        className="absolute inset-y-0 h-full w-full max-w-none object-cover select-none pointer-events-none transition-transform duration-[800ms] hover:scale-[1.03]"
+                        style={{ objectPosition: s.objectPosition || "center 15%", filter: "saturate(1.1) contrast(1.05)" }}
                       />
                       {/* Scrim Overlay */}
                       <div

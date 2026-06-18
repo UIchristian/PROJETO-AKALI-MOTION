@@ -29,7 +29,7 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
       tl.fromTo(
         lineRef.current,
         { scaleX: 0 },
-        { scaleX: 1, duration: 1.0, ease: "power4.inOut", transformOrigin: "left center" }
+        { scaleX: 1, duration: 1.0, ease: "expo.inOut", transformOrigin: "left center" }
       );
 
       // Flash neon glow expansion at slash contact/completion
@@ -46,11 +46,11 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
         "-=0.15"
       );
 
-      // Title characters mask slide-up
+      // Title characters mask slide-up & 3D rotation
       tl.fromTo(
         "[data-hero-word] span span",
-        { yPercent: 110 },
-        { yPercent: 0, duration: 1.1, ease: "power4.out", stagger: 0.08 },
+        { yPercent: 110, rotateX: -90 },
+        { yPercent: 0, rotateX: 0, duration: 1.2, ease: "back.out(1.5)", stagger: 0.08 },
         "-=0.4"
       );
 
@@ -81,12 +81,13 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
 
 
 
-      // Background Parallax
+      // Background Parallax & Scale
       gsap.fromTo(
         bgRef.current,
-        { yPercent: -5 },
+        { yPercent: -5, scale: 1.08 },
         {
           yPercent: 10,
+          scale: 1,
           ease: "none",
           scrollTrigger: {
             trigger: root.current,
@@ -171,10 +172,10 @@ export function Hero({ isParentLoaded }: { isParentLoaded: boolean }) {
         </header>
 
         <div className="flex flex-col items-start gap-6 w-full max-w-3xl">
-          <h1 data-hero-word className="display text-[clamp(5rem,18vw,18rem)] leading-[0.85] text-bone select-none">
+          <h1 data-hero-word className="display text-[clamp(5rem,18vw,18rem)] leading-[0.85] text-bone select-none" style={{ perspective: "1000px" }}>
             {letters.map((l, i) => (
-              <span key={i} className="inline-block overflow-hidden align-bottom">
-                <span className="inline-block translate-y-[110%]">{l}</span>
+              <span key={i} className="inline-block overflow-hidden align-bottom" style={{ transformStyle: "preserve-3d" }}>
+                <span className="inline-block translate-y-[110%] origin-[50%_50%_-40px]">{l}</span>
               </span>
             ))}
           </h1>

@@ -94,6 +94,17 @@ export function Abilities() {
       duration: 0.25,
       overwrite: "auto",
     });
+
+    const icon = card.querySelector("[data-ability-icon]");
+    if (icon) {
+      gsap.to(icon, {
+        x: dx * 0.15,
+        y: dy * 0.15,
+        ease: "power2.out",
+        duration: 0.25,
+        overwrite: "auto",
+      });
+    }
   };
 
   const handleMouseLeave = (e: React.SyntheticEvent<HTMLElement>) => {
@@ -104,10 +115,15 @@ export function Abilities() {
       rotateY: 0,
       "--accent": "oklch(0.82 0.22 155)",
       "--accent-glow": "oklch(0.88 0.24 152 / 45%)",
-      ease: "power3.out",
-      duration: 0.5,
+      ease: "elastic.out(1, 0.5)",
+      duration: 0.7,
       overwrite: "auto",
     });
+
+    const icon = e.currentTarget.querySelector("[data-ability-icon]");
+    if (icon) {
+      gsap.to(icon, { x: 0, y: 0, ease: "elastic.out(1, 0.5)", duration: 0.7, overwrite: "auto" });
+    }
   };
 
   return (
@@ -171,7 +187,7 @@ export function Abilities() {
                   />
 
                   <div className="relative flex items-start justify-between mb-8 pointer-events-none">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-md border border-border bg-background text-2xl accent-text transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 group-focus-within:scale-110 group-focus-within:rotate-12">
+                    <div data-ability-icon className="flex h-14 w-14 items-center justify-center rounded-md border border-border bg-background text-2xl accent-text transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 group-focus-within:scale-110 group-focus-within:rotate-12 shadow-[0_0_15px_var(--accent-glow)]">
                       {icon}
                     </div>
                     <span className="section-label accent-text">{a.key}</span>
